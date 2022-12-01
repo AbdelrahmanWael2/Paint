@@ -14,26 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Component
 //@RequestMapping("/")
 public class Controller
-{
+{  Object obj;
 
-
-   
-   
-
+   //function takes shapeName from front and creates it from ShapeFactory
    @PostMapping("/createShape")
-   public Shape sendShape(@RequestBody String shapeName)
+   Object creatShape(@RequestBody String shapeName)
    {
-      if(shapeName.equals("rectangle"))
-      {
-        Shape rect = new Shape();
-        return rect;
-      }
-      else
-      {
-         return null;
-      }
-      
+      obj = ShapeFactory.createShape(shapeName)  ; 
      
+      return obj;
 
    }
 }

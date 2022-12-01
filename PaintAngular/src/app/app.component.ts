@@ -1,7 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { PaintService } from './paint.service';
-
 
 export interface Shape {
     //attributes
@@ -50,7 +48,7 @@ export class AppComponent {
     { 
      // A service call to tell back that the shape is rectangle and return object from factory
       this.http.post("http://localhost:9090/createShape", "rectangle")
-      .subscribe((res) =>{this.Rect = res})
+      .subscribe((res: any) =>{this.Rect = res, console.log(res)})
 
       //Captures the position clicked by the user to set the new X and Y
       canvas.addEventListener("click", e=>{
@@ -73,7 +71,7 @@ export class AppComponent {
     }
   }
      
-   }
+}
   
    
    
