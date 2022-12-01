@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 //array of objects to be drawn
-
 var allShapes: any[] = []
 
   @Component({
@@ -17,15 +16,10 @@ export class AppComponent {
   title = 'Paint';
   ///some flags////////////////
   rectangle = false
-  rect:any
   X:any
   Y:any
-  output:any
   x:any
   y:any
-  myE:any
-  a:any
-  b:any
   Shape:any
   undo = false
 //////////////////////////////
@@ -58,9 +52,7 @@ export class AppComponent {
       allShapes.push(this.Shape)
       console.log(allShapes.length)
       this.draw()
-      }}) 
-    }
-   }
+      }})}}
   //draws given shapes
   draw()
   {
@@ -90,18 +82,4 @@ export class AppComponent {
     //redraw the new canvas
     this.draw()
   }
-     
 }
-  
-   
-   
-   
-
-     
-
-
-  
-  
-
-
-
