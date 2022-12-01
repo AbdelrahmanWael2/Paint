@@ -12,18 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin
 @Component
-//@RequestMapping("/")
 public class Controller
-{  Object obj;
-
+{  
+   Object obj;
    //function takes shapeName from front and creates it from ShapeFactory
    @PostMapping("/createShape")
    Object creatShape(@RequestBody String shapeName)
    {
       obj = ShapeFactory.createShape(shapeName)  ; 
-     
-      return obj;
-
+      return obj; 
    }
 }
 
