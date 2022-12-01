@@ -1,14 +1,14 @@
 
-  <p id= 'output'></p>
-  
+
+ 
     <div>
-      <button id="rectangle" value="rectangle" (click)="rectangle = true;ngOnInit();create()" > Rectangle</button>
-      
+      <button class = "buttons" id="rectangle" value="rectangle" (click)="rectangle = true;ngOnInit();create()" >Rectangle</button>
+      <button class = "buttons" id="undo" value="undo" (click)="undo = true;ngOnInit();Undo()" > Undo</button>
     </div>
     
-  
+    
 
 
-<canvas #canvas style="border: 5px solid" width="1200" height="500">
+<canvas #canvas style="border: 30px solid rgb(208, 232, 239)" width="1400" height="800">
 
-</canvas>
+</canvas> 

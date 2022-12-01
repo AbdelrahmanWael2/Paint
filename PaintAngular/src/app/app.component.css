@@ -1,15 +1,8 @@
-.functions
+.buttons
 {
-    margin: 0;
-    height: 10%;
-    padding: 4%;
-    background: rgb(218, 232, 228);
-    color: rgb(95, 12, 12);
-    font-size: .8rem;
-    text-align: center;
-    cursor: pointer;
-    opacity: 0.9;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    
+    height:50px;
+    width:80px;
 }
 .field {
 	width: 100%;
