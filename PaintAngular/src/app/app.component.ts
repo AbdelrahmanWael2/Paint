@@ -1,13 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
-export interface Shape {
-    //attributes
-    x:number
-    y:number
-}
 //array of objects to be drawn
-var shapesBack:Shape[] = [];
+var allShapes: any[] = []
 
   @Component({
   selector: 'app-root',
@@ -21,16 +16,12 @@ export class AppComponent {
   title = 'Paint';
   ///some flags////////////////
   rectangle = false
-  rect:any
   X:any
   Y:any
-  output:any
   x:any
   y:any
-  myE:any
-  a:any
-  b:any
-  Rect:any
+  Shape:any
+  undo = false
 //////////////////////////////
   @ViewChild('canvas', {static: true }) mycanvas!: ElementRef;
   ngOnInit(): void{
@@ -48,40 +39,47 @@ export class AppComponent {
     { 
      // A service call to tell back that the shape is rectangle and return object from factory
       this.http.post("http://localhost:9090/createShape", "rectangle")
-      .subscribe((res: any) =>{this.Rect = res, console.log(res)})
+      .subscribe((res: any) =>{this.Shape = res, console.log(res)})
 
       //Captures the position clicked by the user to set the new X and Y
       canvas.addEventListener("click", e=>{
+      if(this.rectangle)
+      {
       this.X = parseInt(e.offsetX.toString());
       this.Y = parseInt(e.offsetY.toString());
+      this.Shape.xP = this.X
+      this.Shape.yP = this.Y
+      allShapes.push(this.Shape)
+      console.log(allShapes.length)
       this.draw()
-      })
-    }
-   }
-  //draws given shape
+      }})}}
+  //draws given shapes
   draw()
   {
     const canvas: HTMLCanvasElement = this.mycanvas.nativeElement
     const context = canvas.getContext('2d');
-      
-    //rectangle
-    if(context && this.rectangle == true)
-    {  
-       context.strokeRect(this.X,this.Y,this.Rect.x,this.Rect.y)
+    console.log(allShapes)
+    for(let i = 0 ; i < allShapes.length; i++)
+    { 
+       if(context && allShapes[i].name === "rectangle" )
+       {
+        context.strokeRect(allShapes[i].xP,allShapes[i].yP,allShapes[i].x,allShapes[i].y)
+        this.rectangle = false
+       }
     }
+    
   }
-     
+  Undo()
+  { const canvas: HTMLCanvasElement = this.mycanvas.nativeElement
+    const context = canvas.getContext('2d');
+    //clears canvas
+    if(context)
+    {context.clearRect(0, 0, canvas.width, canvas.height);}
+    //pops last shape
+    if(this.undo)
+    {allShapes.pop()}
+    this.undo = false
+    //redraw the new canvas
+    this.draw()
+  }
 }
-  
-   
-   
-   
-
-     
-
-
-  
-  
-
-
-
