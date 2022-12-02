@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { PaintService } from './paint.service';
 
 //array of objects to be drawn
 const allShapes: any[] = []
-
+ 
 export interface IShape
 {
   x:number
@@ -22,8 +23,8 @@ export class AppComponent {
 
 
  
-
- constructor(private http:HttpClient){}
+  constructor(private paintService: PaintService){}
+ 
   
   title = 'Paint';
   ///some flags////////////////
@@ -49,7 +50,7 @@ export class AppComponent {
     //rectangle button pressed
     if(this.rectangle == true)
     {  var Shape : IShape
-      this.http.post<Object>("http://localhost:9090/createShape", "rectangle")
+      this.paintService.create("rectangle")
       .subscribe((res:any)=> Shape = res)
       
       
@@ -65,7 +66,7 @@ export class AppComponent {
       console.log(Shape)
 
       //sending the new rectangle to be stored in back
-      this.http.post<IShape>("http://localhost:9090/store",
+      this.paintService.store(
       {
         x:Shape.x,
         y:Shape.y,
