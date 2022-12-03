@@ -1,0 +1,25 @@
+.buttons
+{
+    
+    height:50px;
+    width:80px;
+	
+}
+.field {
+	width: 100%;
+	background: black;
+	height: 300px;
+}
+.buttons:hover
+{
+	background-color: aqua;
+	cursor: pointer;
+}
+.buttons:active
+{
+	background-color: rgb(135, 150, 195);
+}
+.canvas:hover
+{
+	cursor: crosshair;
+}
