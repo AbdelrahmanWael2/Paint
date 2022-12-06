@@ -28,13 +28,13 @@ export class PaintService {
   {
     return this.http.post("http://localhost:9090/save", filename, {responseType:'text'})
   }
-  undo() :Observable<IShape>
+  undo(test : string) :Observable<IShape>
   {
-    return this.http.get<IShape>("http://localhost:9090/undo")
+    return this.http.post<IShape>("http://localhost:9090/undo", "test")
   }
-  redo() :Observable<IShape>
+  redo(test : string) :Observable<IShape>
   {
-    return this.http.get<IShape>("http:localhost:9090/redo")
+    return this.http.post<IShape>("http://localhost:9090/redo", "test")
   }
   load(filename : String) :Observable<IShape[]>
   {

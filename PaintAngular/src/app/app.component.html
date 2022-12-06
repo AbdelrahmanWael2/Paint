@@ -1,24 +1,39 @@
-<div>
-  
-  <button class = "buttons" id="rectangle" value="rectangle" (click)=" rectangleFlag = true; createShapeFn() " >Rectangle</button>
-  <button class = "buttons" id="circle" value="circle" (click)=" circleFlag = true; createShapeFn() " >circle</button>
-  <button class = "buttons" id="ellipse" value="ellipse" (click)=" ellipseFlag = true; createShapeFn() " >Ellipse</button>
-  <button class = "buttons" id="square" value="square" (click)=" squareFlag = true; createShapeFn() " >Square</button>
-  <button class = "buttons" id="line" value="line" (click)=" lineFlag = true; createShapeFn() " >line</button>
-  <button class = "buttons" id="triangle" value="triangle" (click)=" triangleFlag = true; createShapeFn() " >triangle</button>
-
-
-</div>
-<div>
-  
-  <button class = "buttons" id="delete" value="delete" (click)="DeleteCase()" >Delete Selected Item</button>
-  <button class = "buttons" id="copy" value="copy" (click)="CopyCase()" >copy Selected Item</button>
-  <button class = "buttons" id="coloring" value="coloring" (click)="coloringCase()" >coloring Selected Item</button>
+<h1>Our paint web app</h1>
+<div class="options">
+  <h6>OPTIONS</h6>
+  <button class = "buttons" id="delete" value="delete" (click)="DeleteCase()" >Delete</button>
+  <button class = "buttons" id="copy" value="copy" (click)="CopyCase()" >copy</button>
+  <button class = "buttons" id="coloring" value="coloring" (click)="coloringCase()" >coloring</button>
   <button class = "buttons" id="load" value="load" (click)="load()">load</button>
   <button class = "buttons" id="Save" value="Save" (click)="save()">Save</button>
-  <button class = "buttons" id="Save" value="undo" (click)="undo()">undo</button>
-  <button class = "buttons" id="Save" value="redo" (click)="redo()">redo</button>
+  <button class = "buttons" id="undo" value="undo" (click)="undo()">undo</button>
+  <button class = "buttons" id="redo" value="redo" (click)="save()">redo</button>
+</div>
 
+  <div class="drawing-tools">
+  <div class="shaps">
+    <h6>COLORS</h6>
+    <button class = "buttons" id="rectangle" value="rectangle" (click)=" rectangleFlag = true; createShapeFn() " >Rectangle</button>
+    <button class = "buttons" id="circle" value="circle" (click)=" circleFlag = true; createShapeFn() " >circle</button>
+    <button class = "buttons" id="ellipse" value="ellipse" (click)=" ellipseFlag = true; createShapeFn() " >Ellipse</button>
+    <button class = "buttons" id="square" value="square" (click)=" squareFlag = true; createShapeFn() " >Square</button>
+    <button class = "buttons" id="line" value="line" (click)=" lineFlag = true; createShapeFn() " >line</button>
+    <button class = "buttons" id="triangle" value="triangle" (click)=" triangleFlag = true; createShapeFn() " >triangle</button>
+  </div>
+
+  <div id="holder" ></div>
+
+  <div class="colors">
+    <h6>COLORS</h6>
+    <button class = "buttons" id="red" (click)="color = 'red'; sendColor()"></button>
+    <button class = "buttons" id="yellow" (click)="color = 'yellow'; sendColor()"></button>
+    <button class = "buttons" id="green" (click)="color = 'green'; sendColor()"></button>
+    <button class = "buttons" id="blue" (click)="color = 'blue'; sendColor()"></button>
+    <button class = "buttons" id="orange" (click)="color = 'orange'; sendColor()"></button>
+    <button class = "buttons" id="purple" (click)="color = 'purple'; sendColor()"></button>
+    <button class = "buttons" id="gray" (click)="color = 'gray'; sendColor()"></button>
+    <button class = "buttons" id="black" (click)="color = 'black'; sendColor()"></button>
+    <button class = "buttons" id="white" (click)="color = 'white'; sendColor()"></button>
+  </div>
 </div>
   
-<div id="holder" ></div>

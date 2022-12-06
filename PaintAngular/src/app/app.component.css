@@ -1,25 +1,88 @@
+h1{
+	text-align: center;
+	background-color: wheat;
+}
 .buttons
 {
-    
-    height:50px;
-    width:80px;
-	
+    height:80px;
+    width:100px;
+	/* margin: 20px; */
+	background-color: black;
+	color: rgb(255, 255, 255);	
+	font-size: medium;
+	text-align: center;
+	border: 2px solid wheat;
+}
+.options{
+	display: flex;
+	justify-content: center;
+}
+.options h6{
+	padding-right: 10px;
+}
+.buttons:hover
+{
+	background-color: rgb(24, 8, 110);
+	cursor: pointer;
+}
+.buttons:active
+{
+	background-color: rgb(3, 8, 23);
 }
 .field {
 	width: 100%;
 	background: black;
 	height: 300px;
 }
-.buttons:hover
-{
-	background-color: aqua;
-	cursor: pointer;
+.drawing-tools{
+	display: grid;
+	grid-template-columns: 100px 1fr 60px;
 }
-.buttons:active
-{
-	background-color: rgb(135, 150, 195);
+.colors,
+.shaps{
+	margin-top: 50px;
 }
-.canvas:hover
-{
-	cursor: crosshair;
+.colors{
+	margin-right: 20px;
+}
+#holder{
+	margin: 50px;
+}
+h6{
+	margin: 0;
+}
+.colors .buttons{
+	width: 40px;
+	height: 40px;
+}
+
+#red{
+	background-color: red;
+}
+#orange{
+	background-color: orange;
+}
+#yellow{
+	background-color: yellow;
+}
+#green{
+	background-color: green;
+}
+#purple{
+	background-color: purple;
+}
+#gray{
+	background-color: gray;
+}
+#black{
+	background-color: black;
+}
+#white{
+	background-color: white;
+}
+#blue{
+	background-color: blue;
+}
+#holder{
+	border: 3px solid black;
 }

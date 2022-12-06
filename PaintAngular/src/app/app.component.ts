@@ -2,9 +2,10 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { PaintService } from './paint.service';
 import Konva from 'konva';
 import { IShape } from './ishape';
+import { withLatestFrom } from 'rxjs';
 
 //array of objects to be drawn
-var allShapes : any = []
+//var allShapes : any = []
 
 @Component({
 	selector: 'app-root',
@@ -24,7 +25,7 @@ export class AppComponent {
 	squareFlag = false;
 	lineFlag = false;
 	triangleFlag = false;
-
+  color:any
   	X:any;
   	Y:any;
   	x:any;
@@ -39,7 +40,7 @@ export class AppComponent {
 	stage: any;
 	layer: any;
 	tr:any;
-	StageWidth: number = 800;
+	StageWidth: number = 1200;
 	StageHeight: number = 800;
 	idCounter: number = 1;
 	draggedId: number = 1;
@@ -86,13 +87,13 @@ export class AppComponent {
 			if(GotID != undefined){
 				this.draggedId = GotID;
 				this.SelectedItem = this.stage.findOne("#"+this.draggedId.toString());
-				allShapes[this.draggedId].draggable(true);
+				this.SelectedItem.draggable(true);
 				this.resize(1);
 			}
-			else
-			{
-				allShapes[this.draggedId].draggable(false);
-				this.resize(0);
+			else 
+			{ if(this.SelectedItem != undefined){
+				this.SelectedItem.draggable(false);
+				this.resize(0);}
 			}
 
 			// checks moving or resizing
@@ -141,7 +142,7 @@ export class AppComponent {
 			this.layer.add( theCopyItem );
 
 			// all shapes addition
-			allShapes[ this.idCounter-1 ] = theCopyItem;
+			//allShapes[ this.idCounter-1 ] = theCopyItem;
 		}
 	}
 
@@ -169,7 +170,7 @@ export class AppComponent {
 
 			if( this.rectangleFlag ){
 				
-				allShapes[ this.idCounter ] = new Konva.Rect({
+				this.shapeObj = new Konva.Rect({
 					x: this.stage.getPointerPosition().x,
 					y: this.stage.getPointerPosition().y,
 					fillEnabled: false, // add to interface
@@ -183,188 +184,192 @@ export class AppComponent {
 				});
 				this.idCounter = this.idCounter + 1;
 				
-				this.layer.add(allShapes[this.idCounter-1]);
-				Shape.xP = allShapes[this.idCounter-1].x();
-				Shape.yP = allShapes[this.idCounter-1].y();
+				this.layer.add(this.shapeObj);
+				Shape.xP = this.shapeObj.x();
+				Shape.yP = this.shapeObj.y();
 				this.rectangleFlag = false;
 
-
+         console.log(this.shapeObj.id())
 				//sending the new rectangle to be stored in back
 				this.paintService.store({
 						
           //id: this.idCounter,
-          x:Shape.x,
+            x:Shape.x,
 						y:Shape.y,
 						xP:Shape.xP,
 						yP:Shape.yP,
-						name:"rectangle"
-						
+            id: this.shapeObj.id(),
+						name:"rectangle"	
 				}).subscribe();
 
 			} 
-			else if( this.circleFlag ){
+			// else if( this.circleFlag ){
 
-				allShapes[ this.idCounter ] = new Konva.Circle({
+			// 	this.shapeObj = new Konva.Circle({
 
-					x: this.stage.getPointerPosition().x,
-					y: this.stage.getPointerPosition().y,
-					fillEnabled: false, // add to interface
-					width: Shape.x,
-					height: Shape.y,
-					stroke: "black", // border // add to interface 
-					strokeWidth: 5, // add to interface
-					draggable: false, // add to interface
-					id: this.idCounter.toString() // add to interface
+			// 		x: this.stage.getPointerPosition().x,
+			// 		y: this.stage.getPointerPosition().y,
+			// 		fillEnabled: false, // add to interface
+			// 		width: Shape.x,
+			// 		height: Shape.y,
+			// 		stroke: "black", // border // add to interface 
+			// 		strokeWidth: 5, // add to interface
+			// 		draggable: false, // add to interface
+			// 		id: this.idCounter.toString() // add to interface
 					
-				});
-				this.idCounter = this.idCounter + 1;
+			// 	});
+			// 	this.idCounter = this.idCounter + 1;
 
-				var draggedId;
-				this.stage.on("click",function(e: any) {
-					draggedId = e.target.attrs.id;
-				});
-				console.log(draggedId);
+			// 	var draggedId;
+			// 	this.stage.on("click",function(e: any) {
+			// 		draggedId = e.target.attrs.id;
+			// 	});
+			// 	console.log(draggedId);
 
-				this.layer.add(allShapes[this.idCounter-1]);
-				Shape.xP = allShapes[this.idCounter-1].x();
-				Shape.yP = allShapes[this.idCounter-1].y();
-				this.circleFlag = false;
-
-
-				//sending the new rectangle to be stored in back
-				this.paintService.store({
-						x:Shape.x,
-						y:Shape.y,
-						xP:Shape.xP,
-						yP:Shape.yP,
-						name:"rectangle"
-						// id
-				}).subscribe( );
-
-			}	
-			else if( this.ellipseFlag ){
-
-				allShapes[ this.idCounter ] = new Konva.Ellipse({
-
-					x: this.stage.getPointerPosition().x,
-					y: this.stage.getPointerPosition().y,
-					radiusX: 100, // additional
-					radiusY: 50, // additional
-					fillEnabled: false, // add to interface
-					stroke: "black", // border // add to interface 
-					strokeWidth: 5, // add to interface
-					draggable: false, // add to interface
-					id: this.idCounter.toString() // add to interface
-
-				});
-				this.idCounter = this.idCounter + 1;
-				this.layer.add(allShapes[this.idCounter-1]);
-				Shape.xP = allShapes[this.idCounter-1].x();
-				Shape.yP = allShapes[this.idCounter-1].y();
-				this.ellipseFlag = false;
+			// 	this.layer.add(allShapes[this.idCounter-1]);
+			// 	Shape.xP = allShapes[this.idCounter-1].x();
+			// 	Shape.yP = allShapes[this.idCounter-1].y();
+			// 	this.circleFlag = false;
 
 
-				//sending the new rectangle to be stored in back
-				this.paintService.store({
-						x:Shape.x,
-						y:Shape.y,
-						xP:Shape.xP,
-						yP:Shape.yP,
-						name:"rectangle"
-						// id
-				}).subscribe();
+			// 	//sending the new rectangle to be stored in back
+			// 	this.paintService.store({
+			// 			x:Shape.x,
+			// 			y:Shape.y,
+			// 			xP:Shape.xP,
+			// 			yP:Shape.yP,
+      //       id: this.shapeObj.id,
+			// 			name:"rectangle"
+			// 			// id
+			// 	}).subscribe( );
 
-			}
-			else if( this.squareFlag ){
+			// }	
+			// else if( this.ellipseFlag ){
 
-				allShapes[ this.idCounter ] = new Konva.RegularPolygon({
-					x: this.stage.getPointerPosition().x,
-					y: this.stage.getPointerPosition().y,
-					sides: 4, // additional
-					radius: 20, // additional // initial radius of circle that contains the recangle
-					rotation: 45, // additional 
-					// fillEnabled: false, // add to interface
-					fillEnabled: false, // add to interface
-					stroke: "black", // border // add to interface 
-					strokeWidth: 5, // add to interface
-					draggable: false, // add to interface
-					id: this.idCounter.toString() // add to interface
-				});
-				this.idCounter = this.idCounter + 1;
-				this.layer.add(allShapes[this.idCounter-1]);
-				Shape.xP = allShapes[this.idCounter-1].x();
-				Shape.yP = allShapes[this.idCounter-1].y();
-				this.squareFlag = false;
+			// 	allShapes[ this.idCounter ] = new Konva.Ellipse({
 
+			// 		x: this.stage.getPointerPosition().x,
+			// 		y: this.stage.getPointerPosition().y,
+			// 		radiusX: 100, // additional
+			// 		radiusY: 50, // additional
+			// 		fillEnabled: false, // add to interface
+			// 		stroke: "black", // border // add to interface 
+			// 		strokeWidth: 5, // add to interface
+			// 		draggable: false, // add to interface
+			// 		id: this.idCounter.toString() // add to interface
 
-				//sending the new rectangle to be stored in back
-				this.paintService.store({
-						x:Shape.x,
-						y:Shape.y,
-						xP:Shape.xP,
-						yP:Shape.yP,
-						name:"rectangle"
-						// id
-				}).subscribe();
-
-			}
-			else if( this.lineFlag ){
-				allShapes[ this.idCounter ] = new Konva.Line({
-					x: this.stage.getPointerPosition().x,
-					y: this.stage.getPointerPosition().y,
-					points: [0, 0, 100, 0], //additional xp, and yp
-					// fillEnabled: false, // reduced
-					stroke: "black", // border // add to interface 
-					strokeWidth: 5, // add to interface
-					draggable: false, // add to interface
-					id: this.idCounter.toString() // add to interface
-				  });
-				this.idCounter = this.idCounter + 1;
-				this.layer.add(allShapes[this.idCounter-1]);
-				Shape.xP = allShapes[this.idCounter-1].x();
-				Shape.yP = allShapes[this.idCounter-1].y();
-				this.lineFlag = false;
+			// 	});
+			// 	this.idCounter = this.idCounter + 1;
+			// 	this.layer.add(allShapes[this.idCounter-1]);
+			// 	Shape.xP = allShapes[this.idCounter-1].x();
+			// 	Shape.yP = allShapes[this.idCounter-1].y();
+			// 	this.ellipseFlag = false;
 
 
-				//sending the new rectangle to be stored in back
-				this.paintService.store({
-						x:Shape.x,
-						y:Shape.y,
-						xP:Shape.xP,
-						yP:Shape.yP,
-						name:"rectangle"
-						// id
-				}).subscribe();
-			}
-			else if( this.triangleFlag ){
-				allShapes[ this.idCounter ] = new Konva.Line({
-					x: this.stage.getPointerPosition().x,
-					y: this.stage.getPointerPosition().y,
-					points: [0, 0, 0, 100, 100, 100], //additional xp, and yp
-					closed: true,
-					fillEnabled: false, // add to interface
-					stroke: "black", // border // add to interface 
-					strokeWidth: 5, // add to interface
-					draggable: false, // add to interface
-					id: this.idCounter.toString() // add to interface
-				  });
-				this.idCounter = this.idCounter + 1;
-				this.layer.add(allShapes[this.idCounter-1]);
-				Shape.xP = allShapes[this.idCounter-1].x();
-				Shape.yP = allShapes[this.idCounter-1].y();
-				this.triangleFlag = false;
+			// 	//sending the new rectangle to be stored in back
+			// 	this.paintService.store({
+			// 			x:Shape.x,
+			// 			y:Shape.y,
+			// 			xP:Shape.xP,
+			// 			yP:Shape.yP,
+      //       id: this.shapeObj.id,
+			// 			name:"rectangle"
+			// 			// id
+			// 	}).subscribe();
+
+			// }
+			// else if( this.squareFlag ){
+
+			// 	allShapes[ this.idCounter ] = new Konva.RegularPolygon({
+			// 		x: this.stage.getPointerPosition().x,
+			// 		y: this.stage.getPointerPosition().y,
+			// 		sides: 4, // additional
+			// 		radius: 20, // additional // initial radius of circle that contains the recangle
+			// 		rotation: 45, // additional 
+			// 		// fillEnabled: false, // add to interface
+			// 		fillEnabled: false, // add to interface
+			// 		stroke: "black", // border // add to interface 
+			// 		strokeWidth: 5, // add to interface
+			// 		draggable: false, // add to interface
+			// 		id: this.idCounter.toString() // add to interface
+			// 	});
+			// 	this.idCounter = this.idCounter + 1;
+			// 	this.layer.add(allShapes[this.idCounter-1]);
+			// 	Shape.xP = allShapes[this.idCounter-1].x();
+			// 	Shape.yP = allShapes[this.idCounter-1].y();
+			// 	this.squareFlag = false;
 
 
-				//sending the new rectangle to be stored in back
-				this.paintService.store({
-						x:Shape.x,
-						y:Shape.y,
-						xP:Shape.xP,
-						yP:Shape.yP,
-						name:"rectangle"
-						// id
-				}).subscribe();
-			}
+			// 	//sending the new rectangle to be stored in back
+			// 	this.paintService.store({
+			// 			x:Shape.x,
+			// 			y:Shape.y,
+			// 			xP:Shape.xP,
+			// 			yP:Shape.yP,
+      //       id: this.shapeObj.id,
+			// 			name:"rectangle"
+			// 			// id
+			// 	}).subscribe();
+
+			// }
+			// else if( this.lineFlag ){
+			// 	allShapes[ this.idCounter ] = new Konva.Line({
+			// 		x: this.stage.getPointerPosition().x,
+			// 		y: this.stage.getPointerPosition().y,
+			// 		points: [0, 0, 100, 0], //additional xp, and yp
+			// 		// fillEnabled: false, // reduced
+			// 		stroke: "black", // border // add to interface 
+			// 		strokeWidth: 5, // add to interface
+			// 		draggable: false, // add to interface
+			// 		id: this.idCounter.toString() // add to interface
+			// 	  });
+			// 	this.idCounter = this.idCounter + 1;
+			// 	this.layer.add(allShapes[this.idCounter-1]);
+			// 	Shape.xP = allShapes[this.idCounter-1].x();
+			// 	Shape.yP = allShapes[this.idCounter-1].y();
+			// 	this.lineFlag = false;
+
+
+			// 	//sending the new rectangle to be stored in back
+			// 	this.paintService.store({
+			// 			x:Shape.x,
+			// 			y:Shape.y,
+			// 			xP:Shape.xP,
+			// 			yP:Shape.yP,
+      //       id: this.shapeObj.id,
+			// 			name:"rectangle"
+			// 			// id
+			// 	}).subscribe();
+			// }
+			// else if( this.triangleFlag ){
+			// 	allShapes[ this.idCounter ] = new Konva.Line({
+			// 		x: this.stage.getPointerPosition().x,
+			// 		y: this.stage.getPointerPosition().y,
+			// 		points: [0, 0, 0, 100, 100, 100], //additional xp, and yp
+			// 		closed: true,
+			// 		fillEnabled: false, // add to interface
+			// 		stroke: "black", // border // add to interface 
+			// 		strokeWidth: 5, // add to interface
+			// 		draggable: false, // add to interface
+			// 		id: this.idCounter.toString() // add to interface
+			// 	  });
+			// 	this.idCounter = this.idCounter + 1;
+			// 	this.layer.add(allShapes[this.idCounter-1]);
+			// 	Shape.xP = allShapes[this.idCounter-1].x();
+			// 	Shape.yP = allShapes[this.idCounter-1].y();
+			// 	this.triangleFlag = false;
+
+
+			// 	//sending the new rectangle to be stored in back
+			// 	this.paintService.store({
+			// 			x:Shape.x,
+			// 			y:Shape.y,
+			// 			xP:Shape.xP,
+			// 			yP:Shape.yP,
+      //       id: this.shapeObj.id,
+			// 			name:"rectangle"
+			// 	}).subscribe();
+			// }
 		});
 		this.layer.draw();
 	}
@@ -378,13 +383,33 @@ export class AppComponent {
   }
 
   undo(){
-    this.paintService.undo().subscribe((Shape : IShape) => {});
+    this.paintService.undo("test").subscribe((Shape : IShape) => {
+      this.clear()
+    });
   }
 
   redo(){
-    this.paintService.redo().subscribe((Shape : IShape) => {})
+    this.paintService.redo("test").subscribe((Shape : IShape) => {})
   }
 
+  //draws a list
+  draw(){
 
+  }
+
+  clear(){
+    var cl = new Konva.Rect({
+      x:0,
+      y:0,
+      width: this.StageWidth,
+      height: this.StageHeight,
+      fill: "white"
+      }) ;
+      this.layer.add(cl)
+  }
+
+  sendColor(){
+
+  }
 
 }
