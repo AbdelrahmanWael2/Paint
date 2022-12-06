@@ -1,0 +1,26 @@
+.buttons
+{
+    height:50px;
+    width:100px;
+	margin: 20px;
+	background-color: black;
+	color: rgb(255, 255, 255);	
+	font-size: medium;
+	text-align: center;
+}
+.buttons:hover
+{
+	background-color: rgb(24, 8, 110);
+	cursor: pointer;
+}
+.buttons:active
+{
+	background-color: rgb(3, 8, 23);
+}
+.field {
+	width: 100%;
+	background: black;
+	height: 300px;
+}
+
+
