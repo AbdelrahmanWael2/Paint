@@ -1,10 +1,24 @@
-    <div>
-      <button class = "buttons" id="rectangle" value="rectangle" (click)="rectangle = true;ngOnInit();create()" >Rectangle</button>
-      <button class = "buttons" id="save" value="save" (click)="ngOnInit();save()" >Save</button>
-    </div>
-    
+<div>
+  
+  <button class = "buttons" id="rectangle" value="rectangle" (click)=" rectangleFlag = true; createShapeFn() " >Rectangle</button>
+  <button class = "buttons" id="circle" value="circle" (click)=" circleFlag = true; createShapeFn() " >circle</button>
+  <button class = "buttons" id="ellipse" value="ellipse" (click)=" ellipseFlag = true; createShapeFn() " >Ellipse</button>
+  <button class = "buttons" id="square" value="square" (click)=" squareFlag = true; createShapeFn() " >Square</button>
+  <button class = "buttons" id="line" value="line" (click)=" lineFlag = true; createShapeFn() " >line</button>
+  <button class = "buttons" id="triangle" value="triangle" (click)=" triangleFlag = true; createShapeFn() " >triangle</button>
 
 
-<canvas class = "canvas" #canvas style="border: 30px solid rgb(208, 232, 239)" width="1400" height="800">
+</div>
+<div>
+  
+  <button class = "buttons" id="delete" value="delete" (click)="DeleteCase()" >Delete Selected Item</button>
+  <button class = "buttons" id="copy" value="copy" (click)="CopyCase()" >copy Selected Item</button>
+  <button class = "buttons" id="coloring" value="coloring" (click)="coloringCase()" >coloring Selected Item</button>
+  <button class = "buttons" id="load" value="load" (click)="load()">load</button>
+  <button class = "buttons" id="Save" value="Save" (click)="save()">Save</button>
+  <button class = "buttons" id="Save" value="undo" (click)="undo()">undo</button>
+  <button class = "buttons" id="Save" value="redo" (click)="redo()">redo</button>
 
-</canvas> 
+</div>
+  
+<div id="holder" ></div>

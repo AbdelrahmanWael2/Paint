@@ -1,124 +1,390 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { PaintService } from './paint.service';
+import Konva from 'konva';
+import { IShape } from './ishape';
 
 //array of objects to be drawn
-var allShapes: any[] = []
+var allShapes : any = []
 
-export interface IShape
-{
-  x:number
-  y:number
-  xP:number
-  yP:number
-  name:string
-}
-
-  @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+@Component({
+	selector: 'app-root',
+	templateUrl: './app.component.html',
+	styleUrls: ['./app.component.css']
 })
+
 export class AppComponent {
     
- constructor(private paintService:PaintService){}
-  
-  title = 'Paint';
-  ///some flags////////////////
-  rectangle = false
-  X:any
-  Y:any
-  x:any
-  y:any
+	constructor(private paintService:PaintService){}
+	title = 'Paint';
 
-  undo = false
-//////////////////////////////
-  @ViewChild('canvas', {static: true }) mycanvas!: ElementRef;
-  ngOnInit(): void{
-    const canvas: HTMLCanvasElement = this.mycanvas.nativeElement;
-    const context = canvas.getContext('2d');
-  }
+	///some flags////////////////
+  	rectangleFlag = false;
+	circleFlag = false;
+	ellipseFlag = false;
+	squareFlag = false;
+	lineFlag = false;
+	triangleFlag = false;
 
-   //gets desired shape from back 
-   create()
-   {
-    const canvas: HTMLCanvasElement = this.mycanvas.nativeElement
-    const context = canvas.getContext('2d');
-    var Shape : IShape
-    //rectangle button pressed
-    if(this.rectangle == true)
-    { 
-     // A service call to tell back that the shape is rectangle and return object from factory
-      this.paintService.create("rectangle")
-      .subscribe((res: any) =>{Shape = res,console.log(res)})
+  	X:any;
+  	Y:any;
+  	x:any;
+  	y:any;
+	shapeObj: any;
+	SelectedItem: any;
 
-      //Captures the position clicked by the user to set the new X and Y
-      canvas.addEventListener("click", e=>{
-      if(this.rectangle)
-      {
-      this.X = parseInt(e.offsetX.toString());
-      this.Y = parseInt(e.offsetY.toString());
+	// Konva nodes Arr
+	// SelectedItems: Konva.Node[] = [];
 
-      Shape.xP = this.X
-      Shape.yP = this.Y 
-      
-      // allShapes.push(Shape)
-      // console.log(allShapes.length)
-      // this.draw()
+	// variables of stage, layer, transformers
+	stage: any;
+	layer: any;
+	tr:any;
+	StageWidth: number = 800;
+	StageHeight: number = 800;
+	idCounter: number = 1;
+	draggedId: number = 1;
 
-      //sending the new rectangle to be stored in back
-      this.paintService.store(
-      {
-        x:Shape.x,
-        y:Shape.y,
-        xP:Shape.xP,
-        yP:Shape.yP,
-        name:Shape.name
-      }).subscribe((data : IShape) => {
-       Shape = data;
-       })
-       //this sends the updated canvas "allShapes" to be stored in the database
-       allShapes.push(Shape)
-       this.draw()
-      // console.log(allShapes)
-       this.paintService.sendDatabase(allShapes).subscribe()
-        
-      console.log(Shape.xP)
-      
+  Undo = false;
+	//////////////////////////////
 
-      }})}}
-  //draws given shapes
-  draw()
-  {
-    const canvas: HTMLCanvasElement = this.mycanvas.nativeElement
-    const context = canvas.getContext('2d');
-    console.log(allShapes)
-    for(let i = 0 ; i < allShapes.length; i++)
-    { 
-       if(context && allShapes[i].name === "rectangle" )
-       {
-        context.strokeRect(allShapes[i].xP,allShapes[i].yP,allShapes[i].x,allShapes[i].y)
-        this.rectangle = false
-       }
-    }
-    
-  }
 
-   save()
-  {
+	resize(n:number){
+		if(n==0){
+			this.tr.nodes([]);
+		}
+		else
+		{
+			let obj = this.stage.findOne("#"+this.draggedId.toString());
+			this.tr.nodes([obj]);
+		}
+	}
+
+	ngOnInit(): void{
+
+		// create container
+		this.stage = new Konva.Stage({
+			width: this.StageWidth,
+			height: this.StageHeight, 
+			container: "holder",
+		});
+		this.stage.getContainer().style.border = '5px solid black';
+		this.layer = new Konva.Layer();
+		this.stage.add(this.layer);
+
+		// tranformer
+		this.tr = new Konva.Transformer({
+			anchorStroke: 'white',
+			anchorFill: 'cyan',
+			anchorSize: 10,
+		});
+		this.layer.add(this.tr);
+
+
+		// added
+		this.stage.on("click",(e: any) => {
+			var GotID = e.target.attrs.id;
+			if(GotID != undefined){
+				this.draggedId = GotID;
+				this.SelectedItem = this.stage.findOne("#"+this.draggedId.toString());
+				allShapes[this.draggedId].draggable(true);
+				this.resize(1);
+			}
+			else
+			{
+				allShapes[this.draggedId].draggable(false);
+				this.resize(0);
+			}
+
+			// checks moving or resizing
+			this.MoveCase();
+			this.ResizingCase();
+		});
+
+	}
+
+
+	ResizingCase(){
+		if( this.SelectedItem != undefined ){
+			this.SelectedItem.on("transformend", () =>{
+				// store in back.
+				console.log('transformend');
+			});
+		}
+	}
+
+	MoveCase(){
+		if( this.SelectedItem != undefined ){
+			this.SelectedItem.on("dragend", () =>{
+				// store in back.
+				console.log('dragend');
+			});	
+		}
+	}
+
+	DeleteCase(){
+		if( this.SelectedItem != undefined ){
+			// delete in back
+			this.resize(0);
+			this.SelectedItem.destroy();
+		}
+	}
+
+	CopyCase(){
+		if( this.SelectedItem != undefined ){
+			// apply request and get response
+			console.log('in copy function');
+			var theCopyItem = this.SelectedItem.clone();
+			theCopyItem.id(this.idCounter.toString());
+			this.idCounter = this.idCounter + 1;
+			theCopyItem.x( theCopyItem.x() + 20 );
+			theCopyItem.y( theCopyItem.y() + 20 );
+			this.layer.add( theCopyItem );
+
+			// all shapes addition
+			allShapes[ this.idCounter-1 ] = theCopyItem;
+		}
+	}
+
+	coloringCase(){
+		if( this.SelectedItem != undefined ){
+			// storing obj after edit in back 
+			this.SelectedItem.stroke("blue");
+		}
+	}
+
+	createShapeFn(){
+				
+
+		var Shape : IShape;
+
+		// A service call to tell back that the shape is rectangle and return object from factory
+		this.paintService.create("rectangle")
+		.subscribe((res: any) =>{ Shape = res; });
+
+		// create rectangle
+		
+
+		this.stage.on("mousedown", () =>{
+
+
+			if( this.rectangleFlag ){
+				
+				allShapes[ this.idCounter ] = new Konva.Rect({
+					x: this.stage.getPointerPosition().x,
+					y: this.stage.getPointerPosition().y,
+					fillEnabled: false, // add to interface
+					width: Shape.x,
+					height: Shape.y,
+					stroke: "black", // border // add to interface 
+					strokeWidth: 5, // add to interface
+					draggable: false, // add to interface
+					id: this.idCounter.toString(), // add to interface
+					strokeScaleEnabled: false,
+				});
+				this.idCounter = this.idCounter + 1;
+				
+				this.layer.add(allShapes[this.idCounter-1]);
+				Shape.xP = allShapes[this.idCounter-1].x();
+				Shape.yP = allShapes[this.idCounter-1].y();
+				this.rectangleFlag = false;
+
+
+				//sending the new rectangle to be stored in back
+				this.paintService.store({
+						
+          //id: this.idCounter,
+          x:Shape.x,
+						y:Shape.y,
+						xP:Shape.xP,
+						yP:Shape.yP,
+						name:"rectangle"
+						
+				}).subscribe();
+
+			} 
+			else if( this.circleFlag ){
+
+				allShapes[ this.idCounter ] = new Konva.Circle({
+
+					x: this.stage.getPointerPosition().x,
+					y: this.stage.getPointerPosition().y,
+					fillEnabled: false, // add to interface
+					width: Shape.x,
+					height: Shape.y,
+					stroke: "black", // border // add to interface 
+					strokeWidth: 5, // add to interface
+					draggable: false, // add to interface
+					id: this.idCounter.toString() // add to interface
+					
+				});
+				this.idCounter = this.idCounter + 1;
+
+				var draggedId;
+				this.stage.on("click",function(e: any) {
+					draggedId = e.target.attrs.id;
+				});
+				console.log(draggedId);
+
+				this.layer.add(allShapes[this.idCounter-1]);
+				Shape.xP = allShapes[this.idCounter-1].x();
+				Shape.yP = allShapes[this.idCounter-1].y();
+				this.circleFlag = false;
+
+
+				//sending the new rectangle to be stored in back
+				this.paintService.store({
+						x:Shape.x,
+						y:Shape.y,
+						xP:Shape.xP,
+						yP:Shape.yP,
+						name:"rectangle"
+						// id
+				}).subscribe( );
+
+			}	
+			else if( this.ellipseFlag ){
+
+				allShapes[ this.idCounter ] = new Konva.Ellipse({
+
+					x: this.stage.getPointerPosition().x,
+					y: this.stage.getPointerPosition().y,
+					radiusX: 100, // additional
+					radiusY: 50, // additional
+					fillEnabled: false, // add to interface
+					stroke: "black", // border // add to interface 
+					strokeWidth: 5, // add to interface
+					draggable: false, // add to interface
+					id: this.idCounter.toString() // add to interface
+
+				});
+				this.idCounter = this.idCounter + 1;
+				this.layer.add(allShapes[this.idCounter-1]);
+				Shape.xP = allShapes[this.idCounter-1].x();
+				Shape.yP = allShapes[this.idCounter-1].y();
+				this.ellipseFlag = false;
+
+
+				//sending the new rectangle to be stored in back
+				this.paintService.store({
+						x:Shape.x,
+						y:Shape.y,
+						xP:Shape.xP,
+						yP:Shape.yP,
+						name:"rectangle"
+						// id
+				}).subscribe();
+
+			}
+			else if( this.squareFlag ){
+
+				allShapes[ this.idCounter ] = new Konva.RegularPolygon({
+					x: this.stage.getPointerPosition().x,
+					y: this.stage.getPointerPosition().y,
+					sides: 4, // additional
+					radius: 20, // additional // initial radius of circle that contains the recangle
+					rotation: 45, // additional 
+					// fillEnabled: false, // add to interface
+					fillEnabled: false, // add to interface
+					stroke: "black", // border // add to interface 
+					strokeWidth: 5, // add to interface
+					draggable: false, // add to interface
+					id: this.idCounter.toString() // add to interface
+				});
+				this.idCounter = this.idCounter + 1;
+				this.layer.add(allShapes[this.idCounter-1]);
+				Shape.xP = allShapes[this.idCounter-1].x();
+				Shape.yP = allShapes[this.idCounter-1].y();
+				this.squareFlag = false;
+
+
+				//sending the new rectangle to be stored in back
+				this.paintService.store({
+						x:Shape.x,
+						y:Shape.y,
+						xP:Shape.xP,
+						yP:Shape.yP,
+						name:"rectangle"
+						// id
+				}).subscribe();
+
+			}
+			else if( this.lineFlag ){
+				allShapes[ this.idCounter ] = new Konva.Line({
+					x: this.stage.getPointerPosition().x,
+					y: this.stage.getPointerPosition().y,
+					points: [0, 0, 100, 0], //additional xp, and yp
+					// fillEnabled: false, // reduced
+					stroke: "black", // border // add to interface 
+					strokeWidth: 5, // add to interface
+					draggable: false, // add to interface
+					id: this.idCounter.toString() // add to interface
+				  });
+				this.idCounter = this.idCounter + 1;
+				this.layer.add(allShapes[this.idCounter-1]);
+				Shape.xP = allShapes[this.idCounter-1].x();
+				Shape.yP = allShapes[this.idCounter-1].y();
+				this.lineFlag = false;
+
+
+				//sending the new rectangle to be stored in back
+				this.paintService.store({
+						x:Shape.x,
+						y:Shape.y,
+						xP:Shape.xP,
+						yP:Shape.yP,
+						name:"rectangle"
+						// id
+				}).subscribe();
+			}
+			else if( this.triangleFlag ){
+				allShapes[ this.idCounter ] = new Konva.Line({
+					x: this.stage.getPointerPosition().x,
+					y: this.stage.getPointerPosition().y,
+					points: [0, 0, 0, 100, 100, 100], //additional xp, and yp
+					closed: true,
+					fillEnabled: false, // add to interface
+					stroke: "black", // border // add to interface 
+					strokeWidth: 5, // add to interface
+					draggable: false, // add to interface
+					id: this.idCounter.toString() // add to interface
+				  });
+				this.idCounter = this.idCounter + 1;
+				this.layer.add(allShapes[this.idCounter-1]);
+				Shape.xP = allShapes[this.idCounter-1].x();
+				Shape.yP = allShapes[this.idCounter-1].y();
+				this.triangleFlag = false;
+
+
+				//sending the new rectangle to be stored in back
+				this.paintService.store({
+						x:Shape.x,
+						y:Shape.y,
+						xP:Shape.xP,
+						yP:Shape.yP,
+						name:"rectangle"
+						// id
+				}).subscribe();
+			}
+		});
+		this.layer.draw();
+	}
+
+  save(){
     this.paintService.save("test.json").subscribe((msg : String) => {alert(msg)});
   }
-  // Undo()
-  // { const canvas: HTMLCanvasElement = this.mycanvas.nativeElement
-  //   const context = canvas.getContext('2d');
-  //   //clears canvas
-  //   if(context)
-  //   {context.clearRect(0, 0, canvas.width, canvas.height);}
-  //   //pops last shape
-  //   if(this.undo)
-  //   {allShapes.pop()}
-  //   this.undo = false
-  //   //redraw the new canvas
-  //   this.draw()
-  // }
+
+  load(){
+    this.paintService.load("test.json").subscribe((allShapes : IShape[]) => {})
+  }
+
+  undo(){
+    this.paintService.undo().subscribe((Shape : IShape) => {});
+  }
+
+  redo(){
+    this.paintService.redo().subscribe((Shape : IShape) => {})
+  }
+
+
+
 }
