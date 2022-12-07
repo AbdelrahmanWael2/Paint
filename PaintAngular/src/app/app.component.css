@@ -55,6 +55,15 @@ h6{
 	width: 40px;
 	height: 40px;
 }
+/* start added fill border style */
+#fill-border{
+	width: 60px;
+	padding-right: 20px;
+	position:relative; 
+	right: 10px;
+	margin-bottom: 20px;
+}
+/* end added fill border style */
 
 #red{
 	background-color: red;

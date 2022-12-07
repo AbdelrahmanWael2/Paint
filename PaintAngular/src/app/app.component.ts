@@ -19,22 +19,20 @@ export class AppComponent {
 	title = 'Paint';
 
 	///some flags////////////////
+	shapeFlag = "";
   	rectangleFlag = false;
 	circleFlag = false;
 	ellipseFlag = false;
 	squareFlag = false;
 	lineFlag = false;
 	triangleFlag = false;
-  color:any
-  	X:any;
-  	Y:any;
+	fillFlag = false;
+
   	x:any;
   	y:any;
 	shapeObj: any;
 	SelectedItem: any;
 
-	// Konva nodes Arr
-	// SelectedItems: Konva.Node[] = [];
 
 	// variables of stage, layer, transformers
 	stage: any;
@@ -83,12 +81,14 @@ export class AppComponent {
 
 		// added
 		this.stage.on("click",(e: any) => {
+			console.log(' in ngonit ');
 			var GotID = e.target.attrs.id;
 			if(GotID != undefined){
 				this.draggedId = GotID;
 				this.SelectedItem = this.stage.findOne("#"+this.draggedId.toString());
 				this.SelectedItem.draggable(true);
 				this.resize(1);
+				console.log( "id: " + GotID );
 			}
 			else 
 			{ if(this.SelectedItem != undefined){
@@ -103,6 +103,17 @@ export class AppComponent {
 
 	}
 
+
+	// start editing operations
+
+	sendColor( color: string ){
+
+		if( this.SelectedItem != undefined ){
+			// storing obj after edit in back 
+			this.SelectedItem.stroke(color);
+		}
+
+  	}
 
 	ResizingCase(){
 		if( this.SelectedItem != undefined ){
@@ -146,270 +157,357 @@ export class AppComponent {
 		}
 	}
 
-	coloringCase(){
-		if( this.SelectedItem != undefined ){
-			// storing obj after edit in back 
-			this.SelectedItem.stroke("blue");
-		}
-	}
+	// end editing operations
+
+	// start creating shapes
 
 	createShapeFn(){
 				
 
-		var Shape : IShape;
-
-		// A service call to tell back that the shape is rectangle and return object from factory
-		this.paintService.create("rectangle")
-		.subscribe((res: any) =>{ Shape = res; });
-
-		// create rectangle
+		var Shape: IShape;	
 		
+		// A service call to tell back that the shape is rectangle and return object from factory
+		this.paintService.create(this.shapeFlag)
+		.subscribe((res: any) =>{
 
-		this.stage.on("mousedown", () =>{
+			Shape = res; 
+			
 
-
-			if( this.rectangleFlag ){
-				
-				this.shapeObj = new Konva.Rect({
-					x: this.stage.getPointerPosition().x,
-					y: this.stage.getPointerPosition().y,
-					fillEnabled: false, // add to interface
-					width: Shape.x,
-					height: Shape.y,
-					stroke: "black", // border // add to interface 
-					strokeWidth: 5, // add to interface
-					draggable: false, // add to interface
-					id: this.idCounter.toString(), // add to interface
-					strokeScaleEnabled: false,
-				});
-				this.idCounter = this.idCounter + 1;
-				
-				this.layer.add(this.shapeObj);
-				Shape.xP = this.shapeObj.x();
-				Shape.yP = this.shapeObj.y();
-				this.rectangleFlag = false;
-
-         console.log(this.shapeObj.id())
-				//sending the new rectangle to be stored in back
-				this.paintService.store({
-						
-          //id: this.idCounter,
-            x:Shape.x,
-						y:Shape.y,
-						xP:Shape.xP,
-						yP:Shape.yP,
-            id: this.shapeObj.id(),
-						name:"rectangle"	
-				}).subscribe();
-
-			} 
-			// else if( this.circleFlag ){
-
-			// 	this.shapeObj = new Konva.Circle({
-
-			// 		x: this.stage.getPointerPosition().x,
-			// 		y: this.stage.getPointerPosition().y,
-			// 		fillEnabled: false, // add to interface
-			// 		width: Shape.x,
-			// 		height: Shape.y,
-			// 		stroke: "black", // border // add to interface 
-			// 		strokeWidth: 5, // add to interface
-			// 		draggable: false, // add to interface
-			// 		id: this.idCounter.toString() // add to interface
-					
-			// 	});
-			// 	this.idCounter = this.idCounter + 1;
-
-			// 	var draggedId;
-			// 	this.stage.on("click",function(e: any) {
-			// 		draggedId = e.target.attrs.id;
-			// 	});
-			// 	console.log(draggedId);
-
-			// 	this.layer.add(allShapes[this.idCounter-1]);
-			// 	Shape.xP = allShapes[this.idCounter-1].x();
-			// 	Shape.yP = allShapes[this.idCounter-1].y();
-			// 	this.circleFlag = false;
+			this.stage.on("mousedown", () =>{
 
 
-			// 	//sending the new rectangle to be stored in back
-			// 	this.paintService.store({
-			// 			x:Shape.x,
-			// 			y:Shape.y,
-			// 			xP:Shape.xP,
-			// 			yP:Shape.yP,
-      //       id: this.shapeObj.id,
-			// 			name:"rectangle"
-			// 			// id
-			// 	}).subscribe( );
+				if( this.rectangleFlag ){
+	
+					Shape.xP = this.stage.getPointerPosition().x;
+					Shape.yP = this.stage.getPointerPosition().y;
+					this.drawRect( Shape );
+					this.sendToBack( Shape );
+	
+				} 
+				else if( this.circleFlag ){
+	
+					Shape.xP = this.stage.getPointerPosition().x;
+					Shape.yP = this.stage.getPointerPosition().y;
+					this.drawCircle( Shape );
+					this.sendToBack( Shape );
+	
+				}	
+				else if( this.ellipseFlag ){
+	
+					Shape.xP = this.stage.getPointerPosition().x;
+					Shape.yP = this.stage.getPointerPosition().y;
+					this.drawEllipse( Shape );
+					this.sendToBack( Shape );
+	
+				}
+				else if( this.squareFlag ){
+	
+					Shape.xP = this.stage.getPointerPosition().x;
+					Shape.yP = this.stage.getPointerPosition().y;
+					console.log( "in sq case" );
+					this.drawSquare( Shape ); 
+					this.sendToBack( Shape ); 
 
-			// }	
-			// else if( this.ellipseFlag ){
+				}
+				else if( this.lineFlag ){
+	
+					Shape.xP = this.stage.getPointerPosition().x;
+					Shape.yP = this.stage.getPointerPosition().y;
+					this.drawLine( Shape );
+					this.sendToBack( Shape );			
+	
+				}
+				else if( this.triangleFlag ){
+	
+					Shape.xP = this.stage.getPointerPosition().x;
+					Shape.yP = this.stage.getPointerPosition().y;
+					this.drawTriangle( Shape );
+					this.sendToBack( Shape );
+								
+				}
+				this.stage.off("mousedown");
+			});
 
-			// 	allShapes[ this.idCounter ] = new Konva.Ellipse({
+			//
 
-			// 		x: this.stage.getPointerPosition().x,
-			// 		y: this.stage.getPointerPosition().y,
-			// 		radiusX: 100, // additional
-			// 		radiusY: 50, // additional
-			// 		fillEnabled: false, // add to interface
-			// 		stroke: "black", // border // add to interface 
-			// 		strokeWidth: 5, // add to interface
-			// 		draggable: false, // add to interface
-			// 		id: this.idCounter.toString() // add to interface
-
-			// 	});
-			// 	this.idCounter = this.idCounter + 1;
-			// 	this.layer.add(allShapes[this.idCounter-1]);
-			// 	Shape.xP = allShapes[this.idCounter-1].x();
-			// 	Shape.yP = allShapes[this.idCounter-1].y();
-			// 	this.ellipseFlag = false;
-
-
-			// 	//sending the new rectangle to be stored in back
-			// 	this.paintService.store({
-			// 			x:Shape.x,
-			// 			y:Shape.y,
-			// 			xP:Shape.xP,
-			// 			yP:Shape.yP,
-      //       id: this.shapeObj.id,
-			// 			name:"rectangle"
-			// 			// id
-			// 	}).subscribe();
-
-			// }
-			// else if( this.squareFlag ){
-
-			// 	allShapes[ this.idCounter ] = new Konva.RegularPolygon({
-			// 		x: this.stage.getPointerPosition().x,
-			// 		y: this.stage.getPointerPosition().y,
-			// 		sides: 4, // additional
-			// 		radius: 20, // additional // initial radius of circle that contains the recangle
-			// 		rotation: 45, // additional 
-			// 		// fillEnabled: false, // add to interface
-			// 		fillEnabled: false, // add to interface
-			// 		stroke: "black", // border // add to interface 
-			// 		strokeWidth: 5, // add to interface
-			// 		draggable: false, // add to interface
-			// 		id: this.idCounter.toString() // add to interface
-			// 	});
-			// 	this.idCounter = this.idCounter + 1;
-			// 	this.layer.add(allShapes[this.idCounter-1]);
-			// 	Shape.xP = allShapes[this.idCounter-1].x();
-			// 	Shape.yP = allShapes[this.idCounter-1].y();
-			// 	this.squareFlag = false;
-
-
-			// 	//sending the new rectangle to be stored in back
-			// 	this.paintService.store({
-			// 			x:Shape.x,
-			// 			y:Shape.y,
-			// 			xP:Shape.xP,
-			// 			yP:Shape.yP,
-      //       id: this.shapeObj.id,
-			// 			name:"rectangle"
-			// 			// id
-			// 	}).subscribe();
-
-			// }
-			// else if( this.lineFlag ){
-			// 	allShapes[ this.idCounter ] = new Konva.Line({
-			// 		x: this.stage.getPointerPosition().x,
-			// 		y: this.stage.getPointerPosition().y,
-			// 		points: [0, 0, 100, 0], //additional xp, and yp
-			// 		// fillEnabled: false, // reduced
-			// 		stroke: "black", // border // add to interface 
-			// 		strokeWidth: 5, // add to interface
-			// 		draggable: false, // add to interface
-			// 		id: this.idCounter.toString() // add to interface
-			// 	  });
-			// 	this.idCounter = this.idCounter + 1;
-			// 	this.layer.add(allShapes[this.idCounter-1]);
-			// 	Shape.xP = allShapes[this.idCounter-1].x();
-			// 	Shape.yP = allShapes[this.idCounter-1].y();
-			// 	this.lineFlag = false;
-
-
-			// 	//sending the new rectangle to be stored in back
-			// 	this.paintService.store({
-			// 			x:Shape.x,
-			// 			y:Shape.y,
-			// 			xP:Shape.xP,
-			// 			yP:Shape.yP,
-      //       id: this.shapeObj.id,
-			// 			name:"rectangle"
-			// 			// id
-			// 	}).subscribe();
-			// }
-			// else if( this.triangleFlag ){
-			// 	allShapes[ this.idCounter ] = new Konva.Line({
-			// 		x: this.stage.getPointerPosition().x,
-			// 		y: this.stage.getPointerPosition().y,
-			// 		points: [0, 0, 0, 100, 100, 100], //additional xp, and yp
-			// 		closed: true,
-			// 		fillEnabled: false, // add to interface
-			// 		stroke: "black", // border // add to interface 
-			// 		strokeWidth: 5, // add to interface
-			// 		draggable: false, // add to interface
-			// 		id: this.idCounter.toString() // add to interface
-			// 	  });
-			// 	this.idCounter = this.idCounter + 1;
-			// 	this.layer.add(allShapes[this.idCounter-1]);
-			// 	Shape.xP = allShapes[this.idCounter-1].x();
-			// 	Shape.yP = allShapes[this.idCounter-1].y();
-			// 	this.triangleFlag = false;
-
-
-			// 	//sending the new rectangle to be stored in back
-			// 	this.paintService.store({
-			// 			x:Shape.x,
-			// 			y:Shape.y,
-			// 			xP:Shape.xP,
-			// 			yP:Shape.yP,
-      //       id: this.shapeObj.id,
-			// 			name:"rectangle"
-			// 	}).subscribe();
-			// }
 		});
+
+
 		this.layer.draw();
 	}
 
-  save(){
-    this.paintService.save("test.json").subscribe((msg : String) => {alert(msg)});
-  }
+	drawRect( Shape: IShape ){ //
+		this.shapeObj = new Konva.Rect({
 
-  load(){
-    this.paintService.load("test.json").subscribe((allShapes : IShape[]) => {})
-  }
+			x: Shape.xP,
+			y: Shape.yP,
 
-  undo(){
-    this.paintService.undo("test").subscribe((Shape : IShape) => {
-      this.clear()
-    });
-  }
+			width: Shape.x,
+			height: Shape.y,
 
-  redo(){
-    this.paintService.redo("test").subscribe((Shape : IShape) => {})
-  }
+			fill: Shape.fill,
+			fillEnabled: Shape.fillEnabled, 
 
-  //draws a list
-  draw(){
 
-  }
+			stroke: Shape.border, 
+			strokeWidth: Shape.borderWidth,
+			strokeScaleEnabled: Shape.borderScaleEnabled,
 
-  clear(){
-    var cl = new Konva.Rect({
-      x:0,
-      y:0,
-      width: this.StageWidth,
-      height: this.StageHeight,
-      fill: "white"
-      }) ;
-      this.layer.add(cl)
-  }
 
-  sendColor(){
+			id: this.idCounter.toString(), 
+			draggable: false,
+			rotation: Shape.rotation,
 
-  }
+		});
+		Shape.id = this.idCounter.toString();
+		this.idCounter = this.idCounter + 1;
+		this.layer.add(this.shapeObj);
+		this.rectangleFlag = false;
+
+		console.log('in rectangle creation');
+		console.log( Shape.id );
+	}
+
+	drawCircle( Shape: IShape ){
+		this.shapeObj = new Konva.Circle({
+
+			x: Shape.xP,
+			y: Shape.yP,
+
+			radius: Shape.x, // analogy
+
+			fill: Shape.fill,
+			fillEnabled: Shape.fillEnabled, 
+			
+			stroke:  Shape.border, // "black",
+			strokeWidth: Shape.borderWidth,
+			strokeScaleEnabled: Shape.borderScaleEnabled,
+
+			draggable: false, 
+			id: this.idCounter.toString(),
+			rotation: Shape.rotation,
+			
+		});
+		Shape.id = this.idCounter.toString();
+		this.idCounter = this.idCounter + 1;
+		this.layer.add(this.shapeObj);
+		this.circleFlag = false;
+
+		console.log( Shape );
+
+		console.log('in circle creation');
+		console.log( Shape.id );
+	}
+
+	drawEllipse(Shape: IShape){
+
+		this.shapeObj = new Konva.Ellipse({
+
+			x: Shape.xP,
+			y: Shape.yP,
+
+			radiusX: Shape.x, // additional
+			radiusY: Shape.y, // additional
+
+			fill: Shape.fill,
+			fillEnabled: Shape.fillEnabled, 
+
+			stroke: Shape.border, 
+			strokeWidth: Shape.borderWidth,
+			strokeScaleEnabled: Shape.borderScaleEnabled,
+
+			draggable: false, 
+			id: this.idCounter.toString(),
+			rotation: Shape.rotation,
+
+		});
+		Shape.id = this.idCounter.toString();
+		this.idCounter = this.idCounter + 1;
+		this.layer.add(this.shapeObj);
+		this.ellipseFlag = false;
+
+		console.log('in ellipse creation');
+		console.log( Shape.id );
+
+	}
+
+	drawSquare( Shape: IShape ){ // 
+
+		// console.log( Shape );
+
+		this.shapeObj = new Konva.Rect({
+			x: Shape.xP,
+			y: Shape.yP,
+
+			width: Shape.x,
+			height: Shape.y,
+
+			fill: Shape.fill,
+			fillEnabled: Shape.fillEnabled, 
+
+			stroke: Shape.border, 
+			strokeWidth: Shape.borderWidth,
+			strokeScaleEnabled: Shape.borderScaleEnabled,
+
+			draggable: false,
+			id: this.idCounter.toString(), 
+			rotation: 0 // degrees
+		});
+
+		Shape.id = this.idCounter.toString();
+		this.idCounter = this.idCounter + 1;
+		this.layer.add(this.shapeObj);
+		this.squareFlag = false;
+
+		console.log('in square creation');
+		console.log( Shape.id );
+
+	}
+
+	drawLine( Shape: IShape ){
+		this.shapeObj = new Konva.Line({
+
+			x: Shape.xP,
+			y: Shape.yP,
+
+			points: Shape.points, //additional xp, and yp
+
+			fill: Shape.fill,
+			fillEnabled: Shape.fillEnabled, 
+
+			stroke: Shape.border, 
+			strokeWidth: Shape.borderWidth,
+			strokeScaleEnabled: Shape.borderScaleEnabled,
+
+			draggable: false, 
+			id: this.idCounter.toString(),
+			rotation: Shape.rotation,
+
+		});
+		Shape.id = this.idCounter.toString();
+		this.idCounter = this.idCounter + 1;
+		this.layer.add(this.shapeObj);
+		this.lineFlag = false;
+
+		console.log('in line creation');
+		console.log( Shape.id );
+
+	}
+
+	drawTriangle( Shape: IShape ){
+		this.shapeObj = new Konva.Line({
+			x: Shape.xP,
+			y: Shape.yP,
+
+			fill: Shape.fill,
+			fillEnabled: Shape.fillEnabled, 
+
+			stroke: Shape.border, 
+			strokeWidth: Shape.borderWidth,
+			strokeScaleEnabled: Shape.borderScaleEnabled,
+
+			points: Shape.points, //additional xp, and yp
+
+			draggable: false, 
+			id: this.idCounter.toString(), 
+			rotation: Shape.rotation,
+			closed: true,
+		});
+		Shape.id = this.idCounter.toString();
+		this.idCounter = this.idCounter + 1;
+		this.layer.add(this.shapeObj);
+		this.triangleFlag = false;
+
+		console.log('in triangle creation');
+		console.log( Shape.id );
+
+
+	}
+
+	// end creating shapes
+
+	// start data operations
+
+	renderingData(Arr: IShape[]){
+		for( let i = 0; i < Arr.length ; i += 1 ){
+			switch( Arr[i].name ){
+				case "rectangle": this.drawRect( Arr[i] ); break;
+				case "circle": this.drawCircle( Arr[i] ); break;
+				case "ellipse": this.drawEllipse( Arr[i] ); break;
+				case "square": this.drawSquare( Arr[i] ); break;
+				case "line": this.drawLine( Arr[i] ); break;
+				case "triangle": this.drawTriangle( Arr[i] ); break;
+			}
+		}
+	}
+
+	save(){
+		this.paintService.save("test.json").subscribe((msg : String) => {alert(msg)});
+	}
+
+	load(){
+		this.paintService.load("test.json").subscribe((allShapes : IShape[]) => {
+			this.clear();
+			this.renderingData( allShapes );
+		});
+	}
+
+	undo(){
+		this.paintService.undo("test").subscribe((data: any) => {
+			this.clear();
+			console.log( data );
+			this.idCounter = 1;
+			this.renderingData( data );
+		});
+	}
+
+	redo(){
+	this.paintService.redo("test").subscribe((data : any) => {
+		this.clear();
+		console.log( data );
+		this.idCounter = 1;
+		this.renderingData( data );
+	});
+	}
+
+	// end data operations
+
+	// update name in store
+	sendToBack( Shape: IShape ){
+		//sending the new rectangle to be stored in back
+		this.paintService.store({
+
+			name: Shape.name,
+			id: Shape.id,
+
+			xP:Shape.xP,
+			yP:Shape.yP,
+			
+			x:Shape.x,
+			y:Shape.y,
+			
+			border: Shape.border,
+			borderWidth: Shape.borderWidth,
+			borderScaleEnabled: Shape.borderScaleEnabled,
+			
+			fill: Shape.fill,
+			fillEnabled: Shape.fillEnabled,
+
+			rotation: Shape.rotation,
+			points: Shape.points
+
+		}).subscribe();
+	}
+
+
+
+  	clear(){
+
+		this.stage.destroyChildren();
+		this.ngOnInit();
+
+	}
+
+
 
 }
