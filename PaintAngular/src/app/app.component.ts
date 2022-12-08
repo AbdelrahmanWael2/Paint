@@ -3,10 +3,14 @@ import { PaintService } from './paint.service';
 import Konva from 'konva';
 import { IShape } from './ishape';
 import { withLatestFrom } from 'rxjs';
-import { NavigationEnd } from '@angular/router';
-
 //array of objects to be drawn
 //var allShapes : any = []
+
+var fileHandle :any
+var fileData : any
+var saveForm : any
+var saveString:any
+
 
 @Component({
 	selector: 'app-root',
@@ -14,9 +18,11 @@ import { NavigationEnd } from '@angular/router';
 	styleUrls: ['./app.component.css']
 })
 
+
 export class AppComponent {
     
 	constructor(private paintService:PaintService){}
+	
 	title = 'Paint';
 
 	///some flags////////////////
@@ -28,12 +34,20 @@ export class AppComponent {
 	lineFlag = false;
 	triangleFlag = false;
 	fillFlag = false;
+	path:any
+	file:any
+	format:any
+	Load = false
+	Save = false
 
   	x:any;
   	y:any;
 	shapeObj: any;
 	SelectedItem: any;
 
+	saveFile(){
+
+	}
 
 	// variables of stage, layer, transformers
 	stage: any;
@@ -60,8 +74,10 @@ export class AppComponent {
 		}
 	}
 
-	ngOnInit(): void{
+	
 
+	ngOnInit(): void{
+        
 		// create container
 		this.stage = new Konva.Stage({
 			width: this.StageWidth,
@@ -103,6 +119,7 @@ export class AppComponent {
 			this.MoveCase();
 			this.ResizingCase();
 		});
+		
 
 	}
 
@@ -513,15 +530,54 @@ export class AppComponent {
 		}
 	}
 
-	save(){
-		this.paintService.save("test.json").subscribe((msg : String) => {alert(msg)});
+	openForm(){
+		if(this.Save){
+			document.getElementById("saveForm")!.style.display = "block"
+		}
+		else{document.getElementById("loadForm")!.style.display = "block"
+			
+		}
+		
+		
 	}
 
-	load(){
-		this.paintService.load("test.json").subscribe((allShapes : IShape[]) => {
-			this.clear();
-			this.renderingData( allShapes );
-		});
+	finishForm(){
+		
+		this.format = (<HTMLSelectElement>document.getElementById('format')).value;
+		console.log(this.format)
+		this.path = (<HTMLInputElement>document.getElementById("path")).value
+		this.file = (<HTMLInputElement>document.getElementById("file")).value
+		for (var i = 0; i < this.path.length; i++) {
+			if(this.path.charAt(i)=="\\")
+			  this.path = this.path.substring(0,i) + "/" + this.path.substring(i+1,this.path.length)}
+
+		saveString = this.path  + "/" +  this.file + "." + this.format
+		console.log(saveString)
+
+		if(this.Save){
+			this.paintService.save(saveString).subscribe((msg : String) => 
+			{
+			this.cancel();
+			alert(msg)
+			});
+
+		
+		}else{
+			this.paintService.load(saveString).subscribe((allShapes : IShape[]) => {
+				this.clear();
+				this.renderingData( allShapes );
+			});
+		document.getElementById("loadForm")!.style.display = "none"}
+		this.Save = false
+		this.Load = false
+		
+		
+	}
+	cancel(){
+		document.getElementById("saveForm")!.style.display = "none"
+		document.getElementById("loadForm")!.style.display = "none"
+		this.Save = false
+		this.Load = false
 	}
 
 	undo(){
@@ -579,7 +635,4 @@ export class AppComponent {
 		this.ngOnInit();
 
 	}
-
-
-
 }
