@@ -40,4 +40,17 @@ export class PaintService {
   {
     return this.http.post<IShape[]>("http://localhost:9090/load", filename)
   }
+  copy(shape : IShape) : Observable<IShape>
+  {
+    return this.http.post<IShape>("http://localhost:9090/copy", shape)
+  }
+  edit(shape : IShape)
+  {
+    return this.http.post("http://localhost:9090/edit", shape)
+  }
+
+  getObj(id : string ):Observable<IShape>
+  {
+    return this.http.post<IShape>("http://localhost:9090/getObj", id)
+  }
 }

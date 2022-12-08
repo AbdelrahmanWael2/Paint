@@ -3,6 +3,7 @@ import { PaintService } from './paint.service';
 import Konva from 'konva';
 import { IShape } from './ishape';
 import { withLatestFrom } from 'rxjs';
+import { NavigationEnd } from '@angular/router';
 
 //array of objects to be drawn
 //var allShapes : any = []
@@ -38,10 +39,11 @@ export class AppComponent {
 	stage: any;
 	layer: any;
 	tr:any;
-	StageWidth: number = 1200;
+	StageWidth: number = 1620;
 	StageHeight: number = 800;
 	idCounter: number = 1;
 	draggedId: number = 1;
+	typeShape: String = "";
 
   Undo = false;
 	//////////////////////////////
@@ -83,6 +85,7 @@ export class AppComponent {
 		this.stage.on("click",(e: any) => {
 			console.log(' in ngonit ');
 			var GotID = e.target.attrs.id;
+			this.typeShape = e.target.attrs.type;
 			if(GotID != undefined){
 				this.draggedId = GotID;
 				this.SelectedItem = this.stage.findOne("#"+this.draggedId.toString());
@@ -107,18 +110,73 @@ export class AppComponent {
 	// start editing operations
 
 	sendColor( color: string ){
-
+        var res:any
 		if( this.SelectedItem != undefined ){
 			// storing obj after edit in back 
-			this.SelectedItem.stroke(color);
+			if( this.fillFlag ){
+				this.SelectedItem.fillEnabled(true);
+				this.SelectedItem.fill(color);
+			}else{
+				this.SelectedItem.stroke(color);
+			}
+            this.paintService.getObj(this.SelectedItem.id()).subscribe((data : any) => 
+			{
+				res = data,
+				res.fillEnabled = this.SelectedItem.fillEnabled(),
+				res.fill = this.SelectedItem.fill(),
+				res.border = this.SelectedItem.stroke(),
+				console.log(res.fill),
+				console.log(res.stroke),
+				this.paintService.edit(res).subscribe();
+			} )
+			
 		}
 
   	}
 
 	ResizingCase(){
 		if( this.SelectedItem != undefined ){
-			this.SelectedItem.on("transformend", () =>{
-				// store in back.
+			var shape: any;
+			
+		   	this.SelectedItem.on("transformend", (e: any) =>{
+				this.paintService.getObj(this.SelectedItem.id()).subscribe((res : any) => 
+				{
+					shape = res,
+					shape.xP = this.SelectedItem.x(),
+					shape.yP = this.SelectedItem.y();
+					
+					switch(shape.name){
+						case "rectangle":
+							 shape.x =  this.SelectedItem.width()*this.SelectedItem.scaleX();
+						 	 shape.y =  this.SelectedItem.height()*this.SelectedItem.scaleY();
+							 
+						 		break;
+						case "circle": 
+							shape.x = this.SelectedItem.radius()*this.SelectedItem.scaleX();
+							 break;
+						case "ellipse":
+							 shape.x =this.SelectedItem.radiusX()*this.SelectedItem.scaleX();
+							 shape.y = this.SelectedItem.radiusY()*this.SelectedItem.scaleX();
+							  break;
+						case "square":
+							 	shape.x = this.SelectedItem.width()*this.SelectedItem.scaleX();
+								shape.y = this.SelectedItem.height()*this.SelectedItem.scaleY();
+							 	 break;
+						case "line": 
+								shape.points[2] = shape.points[2] + this.SelectedItem.scaleX();
+								console.log(shape.points)
+						 break;
+						case "triangle":
+							shape.points = this.SelectedItem.points();
+							  break;
+					}
+                    console.log(shape)
+					this.paintService.edit(shape).subscribe();
+							
+					
+				})
+
+				console.log( this.typeShape );
 				console.log('transformend');
 			});
 		}
@@ -128,6 +186,13 @@ export class AppComponent {
 		if( this.SelectedItem != undefined ){
 			this.SelectedItem.on("dragend", () =>{
 				// store in back.
+				var shape:IShape
+				this.paintService.getObj(this.SelectedItem.id()).subscribe((res : any) => 
+				{
+					shape = res,
+					shape.xP = this.SelectedItem.x(),
+					shape.yP = this.SelectedItem.y();
+					this.paintService.edit(shape).subscribe();})
 				console.log('dragend');
 			});	
 		}
@@ -142,18 +207,24 @@ export class AppComponent {
 	}
 
 	CopyCase(){
+
 		if( this.SelectedItem != undefined ){
 			// apply request and get response
-			console.log('in copy function');
-			var theCopyItem = this.SelectedItem.clone();
-			theCopyItem.id(this.idCounter.toString());
+			var shape: IShape;
+			this.paintService.copy(this.SelectedItem.id()).subscribe((res: any) => {
+				shape = res;
+				switch( shape.name ){
+					case "rectangle": this.drawRect( shape ); break;
+					case "circle": this.drawCircle( shape ); break;
+					case "ellipse": this.drawEllipse( shape ); break;
+					case "square": this.drawSquare( shape ); break;
+					case "line": this.drawLine( shape ); break;
+					case "triangle": this.drawTriangle( shape ); break;
+				}
+			});
 			this.idCounter = this.idCounter + 1;
-			theCopyItem.x( theCopyItem.x() + 20 );
-			theCopyItem.y( theCopyItem.y() + 20 );
-			this.layer.add( theCopyItem );
+			console.log('in copy function');
 
-			// all shapes addition
-			//allShapes[ this.idCounter-1 ] = theCopyItem;
 		}
 	}
 
@@ -385,6 +456,7 @@ export class AppComponent {
 
 		});
 		Shape.id = this.idCounter.toString();
+		console.log(Shape)
 		this.idCounter = this.idCounter + 1;
 		this.layer.add(this.shapeObj);
 		this.lineFlag = false;
