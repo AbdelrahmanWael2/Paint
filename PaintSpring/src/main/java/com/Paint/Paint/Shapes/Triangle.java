@@ -1,9 +1,30 @@
 package com.Paint.Paint.Shapes;
 
+public class Triangle {
+    
+    private String Name = "triangle";
+    private String id = "";
 
-public class Rectangle  {
-    public Rectangle(){}
-    public Rectangle(String name, String id, double xP, double yP, double x, double y, String border, double borderWidth, boolean borderScaleEnabled, String fill, boolean fillEnabled, double rotation, double[] points) {
+    private double xP = 0;
+    private double yP = 0;
+
+    private double x = 70;
+    private double y = 70;
+
+    private String border = "black";
+
+    private double borderWidth = 5;
+    private boolean borderScaleEnabled = false;
+
+    private String fill = "white";
+    private boolean fillEnabled = false;
+    private double rotation = 0;
+
+    private double points[] = {0,0,0,100,100,100};
+
+    public Triangle(){}
+
+    public Triangle(String name, String id, double xP, double yP, double x, double y, String border, double borderWidth, boolean borderScaleEnabled, String fill, boolean fillEnabled, double rotation, double[] points) {
         Name = name;
         this.id = id;
         this.xP = xP;
@@ -18,52 +39,14 @@ public class Rectangle  {
         this.rotation = rotation;
         this.points = points;
     }
-    private String Name = "rectangle";
-    private String id = "";
-    private double xP = 0;
-    private double yP = 0;
-    private double x = 70;
-    private double y = 50;
-    private String border = "black";
-    private double borderWidth = 5;
-    private boolean borderScaleEnabled = false;
-    private String fill = "white";
-    private boolean fillEnabled = false;
-    private double rotation = 0;
-    private double[] points = {0, 0, 100, 0};
 
+// start setters and getters
 
-    public void setName(String name) {
-        Name = name;
-    }
     public String getName() {
         return Name;
     }
-
-
-    public double getyP() {
-        return yP;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-    public double getX() {
-        return x;
-    }
-
-    public void setxP(double xP) {
-        this.xP = xP;
-    }
-    public double getxP() {
-        return xP;
-    }
-
-    public void setyP(double yP) {
-        this.yP = yP;
-    }
-    public double getY() {
-        return y;
+    public void setName(String name) {
+        Name = name;
     }
 
     public String getId() {
@@ -71,6 +54,34 @@ public class Rectangle  {
     }
     public void setId(String id) {
         this.id = id;
+    }
+
+    public double getxP() {
+        return xP;
+    }
+    public void setxP(double xP) {
+        this.xP = xP;
+    }
+
+    public double getyP() {
+        return yP;
+    }
+    public void setyP(double yP) {
+        this.yP = yP;
+    }
+
+    public double getX() {
+        return x;
+    }
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+    public void setY(double y) {
+        this.y = y;
     }
 
     public String getBorder() {
@@ -122,6 +133,5 @@ public class Rectangle  {
         this.points = points;
     }
 
-
- }
- 
+    // end setters and getters.
+}
