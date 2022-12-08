@@ -148,6 +148,7 @@ public class Controller
          {
             XMLDecoder dec = new XMLDecoder(fip);
             storage.push((List<shapeClass>) dec.readObject());
+            storage.pop();
             dec.close();
             fip.close();
          }
