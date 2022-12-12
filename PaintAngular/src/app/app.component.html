@@ -1,0 +1,113 @@
+<!-- header  -->
+<h1>Our paint web app</h1>
+<!-- options buttons -->
+<div class="options">
+  <h3>OPTIONS</h3>
+  <button class = "buttons" id="delete" value="delete" (click)="DeleteCase()" >
+    <i class="fa-regular fa-trash-can"></i>
+  </button>
+  <button class = "buttons" id="copy" value="copy" (click)="CopyCase()" >
+    <i class="fa-regular fa-copy"></i>
+  </button>
+  <button class = "buttons" id="load" value="load" (click)="openForm();Load=true">
+    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+  </button>
+  <button class = "buttons" id="Save" value="Save" (click)="openForm();Save=true">
+    <i class="fa-solid fa-file-arrow-down"></i>
+  </button>
+  <button class = "buttons" id="undo" value="undo" (click)="undo()">
+    <i class="fa-solid fa-arrow-rotate-left"></i>
+  </button>
+  <button class = "buttons" id="redo" value="redo" (click)="redo()">
+    <i class="fa-solid fa-arrow-rotate-right"></i>
+  </button>
+</div>
+
+<!-- shapes, stage and colors  -->
+<div class="drawing-tools">
+
+  <!-- shapes buttons -->
+  <div class="shaps">
+    <h3>SHAPES</h3>
+    <button class = "buttons" id="rectangle" value="rectangle" (click)=" shapeFlag = 'rectangle'; createShapeFn();" >
+      <span id="myrect">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    </button>
+    <button class = "buttons" id="circle" value="circle" (click)=" shapeFlag = 'circle'; createShapeFn() " >
+      <i class="fa-regular fa-circle"></i>
+    </button>
+    <button class = "buttons" id="ellipse" value="ellipse" (click)=" shapeFlag = 'ellipse'; createShapeFn() " >
+      <img src="../assets/ellips.jpeg" alt="">
+    </button>
+    <button class = "buttons" id="square" value="square" (click)=" shapeFlag = 'square'; createShapeFn() " >
+      <i class="fa-regular fa-square"></i>
+    </button>
+    <button class = "buttons" id="line" value="line" (click)=" shapeFlag = 'line'; createShapeFn() " >
+      <i class="fa-solid fa-minus"></i>
+    </button>
+    <button class = "buttons" id="triangle" value="triangle" (click)=" shapeFlag = 'triangle'; createShapeFn() " >
+      <!-- <i class="fa-solid fa-play"></i> -->
+      <img src="../assets/triangle.jpg" alt="">
+    </button>
+    <button class = "buttons" id="freeHand" value="freeHand" (click)=" freeHand() " >
+      <i class="fa-solid fa-pencil"></i>
+    </button>
+  </div>
+
+  <!-- stage  -->
+  <div id="holder" ></div>
+
+  <!-- coloring section  -->
+  <div class="colors">
+    <h3>COLORS</h3>
+
+    <!-- manipulate between filling and borderOnly -->
+    <button class = "buttons" id="fill-border" (click)="fillFlag = !fillFlag">
+      <span *ngIf="fillFlag">&nbsp;&nbsp;&nbsp;fill</span>
+      <span *ngIf="!fillFlag">border</span>
+    </button>
+
+    <!-- color picker  -->
+    <button class = "color-picker" id="color-picker" ></button>
+  </div>
+  
+  
+  <!-- forms  -->
+  <div  class= "form-popup" id="loadForm">
+    <div class="form-container">
+    <label for="path" class="label" ><b>File Name:</b></label>
+    <input type="text"id="file" placeholder="Enter file name" name="path" required>
+    <label for="path" class="label"><b>File Path</b></label>
+    <input type="text" id="path" placeholder="Enter file location" name="path" required>
+    
+    <select class="format" name="format" id="format">
+      <option value="json">JSON</option>
+      <option value="xml">XML</option>
+    </select>
+    
+    <button class = "btn" id="save" value="save" (click)="finishForm()">Enter</button>
+    <button class = "btn" id="close" value="close" (click)="cancel()">Close</button>
+  </div>
+</div>
+
+<div class="form-popup" id="saveForm">
+  <div class="form-container">
+    <label for="path" class="label" ><b>File Name:</b></label>
+    <input type="text"id="file" placeholder="Enter file name" name="path" required>
+    <label for="path" class="label"><b>File Path</b></label>
+    <input type="text" id="path" placeholder="Enter file location" name="path" required>
+    
+    <select class="format" name="format" id="format">
+      <option value="json">JSON</option>
+      <option value="xml">XML</option>
+
+    </select>
+    
+    <button class = "btn" id="save" value="save" (click)="finishForm()">Enter</button>
+    <button class = "btn" id="close" value="close" (click)="cancel()">Close</button>
+  </div>
+  
+</div>
+
+
+  
+  
