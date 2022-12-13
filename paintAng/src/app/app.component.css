@@ -1,0 +1,321 @@
+/* intro  */
+h1{
+	text-align: center;
+	background-color: rgb(29, 130, 76);
+	margin-top: 0;
+	padding-top: 30px;
+	height: 60px;
+}
+/* all buttons  */
+.buttons
+{
+    height:80px;
+    width:100px;
+	background-color: white;
+	font-size: medium;
+	text-align: center;
+	border: 2px solid rgb(29, 130, 76);
+}
+.buttons:hover
+{
+	border: blue solid 3px;
+	cursor: pointer;
+}
+.buttons:active
+{
+	border: red solid 3px;
+}
+
+/* shaps stage colors  */
+.drawing-tools{
+	display: grid;
+	grid-template-columns: 100px 1fr 100px;
+}
+/* top options buttons  */
+.options{
+	display: flex;
+	justify-content: center;
+}
+.options .buttons{
+	margin-right: 5px;
+}
+.options h3{
+	padding-right: 10px;
+	padding-top: 30px;
+}
+
+.colors,
+.shaps{
+	margin-top: 50px;
+}
+.colors{
+	margin-right: 20px;
+}
+.shaps .buttons{
+	margin-bottom: 5px;
+}
+
+/* draw rectangle in rectangle button  */
+#myrect{
+	border: solid 5px black;
+}
+/* shapes hover  */
+#rectangle:hover:after{
+	content: "rectangle";
+	position: absolute;
+	width: 70px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#circle:hover:after{
+	content: "circle";
+	position: absolute;
+	width: 70px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#ellipse:hover:after{
+	content: "ellipse";
+	position: absolute;
+	width: 70px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#square:hover:after{
+	content: "square";
+	position: absolute;
+	width: 70px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#line:hover:after{
+	content: "line";
+	position: absolute;
+	width: 70px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#triangle:hover:after{
+	content: "triangle";
+	position: absolute;
+	width: 70px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#freeHand:hover:after{
+	content: "draw";
+	position: absolute;
+	width: 70px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+img{
+	width: 70px;
+}
+
+.buttons i{
+	font-size: 50px;
+}
+
+#color-picker{
+	width: 100px;
+	height: 100px;
+	/* background-color: rgb(16, 222, 95); */
+	background: linear-gradient(white,#404040 ,#808080);
+	border-radius: 100%;
+	position: absolute;
+	right: 10px;
+	top: 380px;
+	
+}
+#color-picker:hover{
+	border: solid 5px blue;
+}
+#color-picker:hover:after{
+	color: black;
+	content: "pick a color";
+	position: absolute;
+	right: 100%;
+	width: 100px;
+	height: 20px;
+	background-color: #9bd5da;
+	font-size: 15px;
+	font-weight: 600;
+}
+#holder{
+	position: relative;
+	margin: 50px;
+	border: 3px solid black;
+}
+#holder:hover:after{
+	content: "drop a shape here";
+	position: absolute;
+	bottom: 95%;
+	width: 120px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+
+h3{
+	margin: 0;
+}
+#delete:hover:after{
+	content: "delete";
+	position: absolute;
+	width: 50px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#copy:hover:after{
+	content: "copy";
+	position: absolute;
+	width: 50px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#undo:hover:after{
+	content: "undo";
+	position: absolute;
+	width: 50px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#redo:hover:after{
+	content: "redo";
+	position: absolute;
+	width: 50px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#Save:hover:after{
+	content: "dowenload...";
+	position: absolute;
+	width: 90px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+#load:hover:after{
+	content: "open...";
+	position: absolute;
+	width: 80px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+/* start added fill border style */
+#fill-border{
+	width: 70px;
+	padding-right: 20px;
+	/* position:relative;  */
+	font-size: large;
+	font-weight: 600;
+	right: 10px;
+	margin-bottom: 20px;
+	color: white;
+	background: linear-gradient(white,#404040 ,#808080);
+	
+}
+/* end added fill border style */
+#fill-border:hover:after{
+	color: black;
+	content: "border color or fill color";
+	position: absolute;
+	right: 5%;
+	width: 250px;
+	height: 20px;
+	background-color: #9bd5da;
+}
+
+.form-container {
+	max-width: 500px;
+	height: 350px;
+	padding: 10px;
+	background-color: rgb(127, 193, 209);
+	max-width: 500px;
+	padding: 10px;
+	  
+  }
+
+/* The popup form - hidden by default */
+.form-popup {
+	bottom: 660px;
+	right: 75px;
+	border: 3px solid #91e5e6;
+	z-index: 4;
+	width: 500px;
+	display: none;
+	position: fixed;
+	top: 100px;
+}
+
+	/* Full-width input fields */
+	.form-container input[type=text] {
+	width: 80%;
+	padding: 15px;
+	margin: 5px 0 22px 0;
+	border: none;
+	background: #9bd5da;
+	}
+
+	/* When the inputs get focus, do something */
+	.form-container input[type=text]:focus{
+	background-color: rgb(145, 209, 223);
+	outline: none;
+	}
+
+	/* Set a style for the submit/login button */
+	.form-container .btn {
+	background-color: #ec710d;
+	color: rgb(137, 197, 209);
+	padding: 16px 20px;
+	border: none;
+	cursor: pointer;
+	width: 70%;
+	margin-bottom:10px;
+	opacity: 0.8;
+	}
+	
+	/* Add some hover effects to buttons */
+	.form-container .btn:hover{
+	opacity: 1;
+}
+/* Full-width input fields */
+.form-container input[type=text]{
+	width: 90%;
+	padding: 15px;
+	margin: 5px 0 22px 0;
+	border: none;
+	background: #87afb5;
+}
+
+/* When the inputs get focus, do something */
+.form-container input[type=text]:focus{
+	background-color: rgb(182, 222, 219);
+	outline: none;
+}
+
+/* Set a style for the submit/login button */
+.form-container .btn {
+	background-color: #000000;
+	color: rgb(255, 255, 255);
+	padding: 16px 20px;
+	border: none;
+	cursor: pointer;
+	width: 100%;
+	margin-bottom:10px;
+	opacity: 0.8;
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover {
+	opacity: 1;
+}
+
+.format{
+	padding: 10px;
+	margin-bottom: 20px;
+	background-color: #87afb5;
+}
+
+.label{
+	font-family: Arial, Helvetica, sans-serif;
+}
